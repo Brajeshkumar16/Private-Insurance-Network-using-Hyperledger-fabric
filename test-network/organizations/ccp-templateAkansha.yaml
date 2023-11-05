@@ -1,0 +1,53 @@
+---
+name: test-network-Akansha
+version: 1.0.0
+client:
+  organization: Akansha  # Change organization name to "AkanshaInsurance"
+  connection:
+    timeout:
+      peer:
+        endorser: '300'
+organizations:
+  Akansha:  # Change organization name to "AkanshaInsurance"
+    mspid: AkanshaMSP  # Change MSP ID if necessary
+    peers:
+    - AkanshaEndorser  # Add "AkanshaEndorser"
+    - AkanshaCommitters   # Add "AkanshaCommitters"
+    - AkanshaAnchors  # Add "AkanshaAnchors"
+    certificateAuthorities:
+    - ca.AkanshaInsurance  # Update CA name if necessary
+peers:
+  AkanshaEndorser:  # Add "AkanshaEndorser"
+    url: grpcs://localhost:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: AkanshaEndorser  # Update hostnameOverride
+      hostnameOverride: AkanshaEndorser  # Update hostnameOverride
+  AkanshaCommitters:   # Add "AkanshaCommitters"
+    url: grpcs://localhost:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: AkanshaCommitters  # Update hostnameOverride
+      hostnameOverride: AkanshaCommitters  # Update hostnameOverride
+  AkanshaAnchors:  # Add "AkanshaAnchors"
+    url: grpcs://localhost:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: AkanshaAnchors  # Update hostnameOverride
+      hostnameOverride: AkanshaAnchors  # Update hostnameOverride
+certificateAuthorities:
+  ca.AkanshaInsurance:  # Update CA name to "ca.AkanshaInsurance.example.com"
+    url: https://localhost:${CAPORT}
+    caName: ca-Akansha  # Update CA name if necessary
+    tlsCACerts:
+      pem: 
+        - |
+          ${CAPEM}
+    httpOptions:
+      verify: false

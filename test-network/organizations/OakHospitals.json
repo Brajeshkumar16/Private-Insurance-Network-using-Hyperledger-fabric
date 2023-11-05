@@ -1,0 +1,93 @@
+{
+    "name": "test-network-org${ORG}",
+    "version": "1.0.0",
+    "client": {
+        "organization": "Oak",  
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300"
+                }
+            }
+        }
+    },
+    "organizations": {
+        "Oak": {  
+            "mspid": "OakMSP",  
+            "peers": [
+                "OakDoctorPeer",  
+                "OakNursePeer",
+                "OakAnchDoctor",  
+                "OakEndorsStaff",
+                "OakAdmissionsPeer" 
+            ],
+            "certificateAuthorities": [
+                "ca.OakHospitals"  
+            ]
+        }
+    },
+    "peers": {
+        "OakDoctorPeer": {  
+            "url": "grpcs://localhost:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "OakDoctorPeer",  
+                "hostnameOverride": "OakDoctorPeer"          
+            }
+        },
+        "OakNursePeer": {   
+            "url": "grpcs://localhost:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "OakNursePeer",  
+                "hostnameOverride": "OakNursePeer"          
+            }
+        },
+        "OakAnchDoctor": {  
+            "url": "grpcs://localhost:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "OakAnchDoctor",  
+                "hostnameOverride": "OakAnchDoctor"          
+            }
+        },
+        "OakEndorsStaff": {   
+            "url": "grpcs://localhost:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "OakEndorsStaff",  
+                "hostnameOverride": "OakEndorsStaff"          
+            }
+        },
+        "OakAdmissionsPeer": {  
+            "url": "grpcs://localhost:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "OakAdmissionsPeer",  
+                "hostnameOverride": "OakAdmissionsPeer"          
+            }
+        }
+    },
+    "certificateAuthorities": {
+        "ca.OakHospitals": {  
+            "url": "https://localhost:${CAPORT}",
+            "caName": "ca-Oak",  
+            "tlsCACerts": {
+                "pem": ["${CAPEM}"]
+            },
+            "httpOptions": {
+                "verify": false
+            }
+        }
+    }
+}

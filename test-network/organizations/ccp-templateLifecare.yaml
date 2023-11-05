@@ -1,0 +1,53 @@
+---
+name: test-network-Lifecare
+version: 1.0.0
+client:
+  organization: Lifecare  # Change organization name to "LifecareInsurance"
+  connection:
+    timeout:
+      peer:
+        endorser: '300'
+organizations:
+  Lifecare:  # Change organization name to "LifecareInsurance"
+    mspid: LifecareMSP  # Change MSP ID if necessary
+    peers:
+    - LifecareEndorser  # Add "LifecareEndorser"
+    - LifecareCommitters   # Add "LifecareCommitters"
+    - LifecareAnchors  # Add "LifecareAnchors"
+    certificateAuthorities:
+    - ca.LifecareInsurance  # Update CA name if necessary
+peers:
+  LifecareEndorser:  # Add "LifecareEndorser"
+    url: grpcs://localhost:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: LifecareEndorser  # Update hostnameOverride
+      hostnameOverride: LifecareEndorser  # Update hostnameOverride
+  LifecareCommitters:   # Add "LifecareCommitters"
+    url: grpcs://localhost:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: LifecareCommitters  # Update hostnameOverride
+      hostnameOverride: LifecareCommitters  # Update hostnameOverride
+  LifecareAnchors:  # Add "LifecareAnchors"
+    url: grpcs://localhost:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: LifecareAnchors  # Update hostnameOverride
+      hostnameOverride: LifecareAnchors  # Update hostnameOverride
+certificateAuthorities:
+  ca.LifecareInsurance:  # Update CA name to "ca.LifecareInsurance.example.com"
+    url: https://localhost:${CAPORT}
+    caName: ca-Lifecare  # Update CA name if necessary
+    tlsCACerts:
+      pem: 
+        - |
+          ${CAPEM}
+    httpOptions:
+      verify: false

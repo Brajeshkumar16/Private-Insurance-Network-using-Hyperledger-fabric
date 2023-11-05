@@ -1,0 +1,53 @@
+---
+name: test-network-Diagnostic
+version: 1.0.0
+client:
+  organization: Diagnostic  # Change organization name to "DiagnosticCentre"
+  connection:
+    timeout:
+      peer:
+        endorser: '300'
+organizations:
+  Diagnostic:  # Change organization name to "DiagnosticCentre"
+    mspid: DiagnosticMSP  # Change MSP ID if necessary
+    peers:
+    - DiagnosticEndorser  # Add "DiagnosticEndorser"
+    - DiagnosticCommitters   # Add "DiagnosticCommitters"
+    - DiagnosticAnchors  # Add "DiagnosticAnchors"
+    certificateAuthorities:
+    - ca.DiagnosticCentre  # Update CA name if necessary
+peers:
+  DiagnosticEndorser:  # Add "DiagnosticEndorser"
+    url: grpcs://localhost:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: DiagnosticEndorser  # Update hostnameOverride
+      hostnameOverride: DiagnosticEndorser  # Update hostnameOverride
+  DiagnosticCommitters:   # Add "DiagnosticCommitters"
+    url: grpcs://localhost:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: DiagnosticCommitters  # Update hostnameOverride
+      hostnameOverride: DiagnosticCommitters  # Update hostnameOverride
+  DiagnosticAnchors:  # Add "DiagnosticAnchors"
+    url: grpcs://localhost:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: DiagnosticAnchors  # Update hostnameOverride
+      hostnameOverride: DiagnosticAnchors  # Update hostnameOverride
+certificateAuthorities:
+  ca.DiagnosticCentre:  # Update CA name to "ca.DiagnosticCentre.example.com"
+    url: https://localhost:${CAPORT}
+    caName: ca-Diagnostic  # Update CA name if necessary
+    tlsCACerts:
+      pem: 
+        - |
+          ${CAPEM}
+    httpOptions:
+      verify: false

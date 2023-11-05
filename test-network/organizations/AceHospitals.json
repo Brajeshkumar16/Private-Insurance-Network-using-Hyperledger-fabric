@@ -1,0 +1,93 @@
+{
+    "name": "test-network-org${ORG}",
+    "version": "1.0.0",
+    "client": {
+        "organization": "Ace",  
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300"
+                }
+            }
+        }
+    },
+    "organizations": {
+        "Ace": {  
+            "mspid": "AceMSP",  
+            "peers": [
+                "DoctorPeer",  
+                "NursePeer",
+                "AnchDoctor",  
+                "EndorsStaff",
+                "AdmissionsPeer" 
+            ],
+            "certificateAuthorities": [
+                "ca.AceHospitals"  
+            ]
+        }
+    },
+    "peers": {
+        "DoctorPeer": {  
+            "url": "grpcs://localhost:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "DoctorPeer",  
+                "hostnameOverride": "DoctorPeer"          
+            }
+        },
+        "NursePeer": {   
+            "url": "grpcs://localhost:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "NursePeer",  
+                "hostnameOverride": "NursePeer"          
+            }
+        },
+        "AnchDoctor": {  
+            "url": "grpcs://localhost:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "AnchDoctor",  
+                "hostnameOverride": "AnchDoctor"          
+            }
+        },
+        "EndorsStaff": {   
+            "url": "grpcs://localhost:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "EndorsStaff",  
+                "hostnameOverride": "EndorsStaff"          
+            }
+        },
+        "AdmissionsPeer": {  
+            "url": "grpcs://localhost:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "AdmissionsPeer",  
+                "hostnameOverride": "AdmissionsPeer"          
+            }
+        }
+    },
+    "certificateAuthorities": {
+        "ca.AceHospitals": {  
+            "url": "https://localhost:${CAPORT}",
+            "caName": "ca-Ace",  
+            "tlsCACerts": {
+                "pem": ["${CAPEM}"]
+            },
+            "httpOptions": {
+                "verify": false
+            }
+        }
+    }
+}

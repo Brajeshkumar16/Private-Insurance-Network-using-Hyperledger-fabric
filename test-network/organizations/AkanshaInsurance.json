@@ -1,0 +1,71 @@
+{
+    "name": "test-network-org${ORG}",
+    "version": "1.0.0",
+    "client": {
+        "organization": "Akansha",  
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300"
+                }
+            }
+        }
+    },
+    "organizations": {
+        "Akansha": {  
+            "mspid": "AkanshaMSP",  
+            "peers": [
+                "AkanshaEndorser",  
+                "AkanshaCommitters",
+                "AkanshaAnchors"
+            ],
+            "certificateAuthorities": [
+                "ca.AkanshaInsurance"  
+            ]
+        }
+    },
+    "peers": {
+        "AkanshaEndorser": {  
+            "url": "grpcs://localhost:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "AkanshaEndorser",  
+                "hostnameOverride": "AkanshaEndorser"          
+            }
+        },
+        "AkanshaCommitters": {   
+            "url": "grpcs://localhost:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "AkanshaCommitters",  
+                "hostnameOverride": "AkanshaCommitters"          
+            }
+        },
+        "AkanshaAnchors": {  
+            "url": "grpcs://localhost:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "AkanshaAnchors",  
+                "hostnameOverride": "AkanshaAnchors"          
+            }
+        }
+    },
+    "certificateAuthorities": {
+        "ca.AkanshaInsurance": {  
+            "url": "https://localhost:${CAPORT}",
+            "caName": "ca-Akansha",  
+            "tlsCACerts": {
+                "pem": ["${CAPEM}"]
+            },
+            "httpOptions": {
+                "verify": false
+            }
+        }
+    }
+}

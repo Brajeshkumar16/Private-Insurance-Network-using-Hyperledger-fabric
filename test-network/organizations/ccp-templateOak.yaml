@@ -1,0 +1,71 @@
+---
+name: test-network-org${ORG}
+version: 1.0.0
+client:
+  organization: Oak # Change organization name to "OakHospitals"
+  connection:
+    timeout:
+      peer:
+        endorser: '300'
+organizations:
+  Oak:  # Change organization name to "OakHospitals"
+    mspid: OakMSP  # Change MSP ID if necessary
+    peers:
+    - DoctorPeer  # Add "DoctorPeer"
+    - NursePeer   # Add "NursePeer"
+    - AnchDoctor  # Add "AnchDoctor"
+    - EndorsStaff # Add "EndorsStaff"
+    - AdmissionsPeer # Add "AdmissionsPeer"
+    certificateAuthorities:
+    - ca.OakHospitals  # Update CA name if necessary
+peers:
+  OakDoctorPeer:  # Add "DoctorPeer"
+    url: grpcs://localhost:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: OakDoctorPeer # Update hostnameOverride
+      hostnameOverride: OakDoctorPeer  # Update hostnameOverride
+  OakNursePeer:   # Add "NursePeer"
+    url: grpcs://localhost:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: OakNursePeer  # Update hostnameOverride
+      hostnameOverride: OakNursePeer  # Update hostnameOverride
+  OakAnchDoctor:  # Add "AnchDoctor"
+    url: grpcs://localhost:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: OakAnchDoctor # Update hostnameOverride
+      hostnameOverride: OakAnchDoctor  # Update hostnameOverride
+  OakEndorsStaff: # Add "EndorsStaff"
+    url: grpcs://localhost:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: OakEndorsStaff  # Update hostnameOverride
+      hostnameOverride: OakEndorsStaff  # Update hostnameOverride
+  OakAdmissionsPeer: # Add "AdmissionsPeer"
+    url: grpcs://localhost:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: OakAdmissionsPeer  # Update hostnameOverride
+      hostnameOverride: OakAdmissionsPeer  # Update hostnameOverride
+certificateAuthorities:
+  ca.OakHospitals:  # Update CA name to "ca.OakHospitals.example.com"
+    url: https://localhost:${CAPORT}
+    caName: ca-Oak  # Update CA name if necessary
+    tlsCACerts:
+      pem: 
+        - |
+          ${CAPEM}
+    httpOptions:
+      verify: false

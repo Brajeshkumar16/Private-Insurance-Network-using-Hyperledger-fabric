@@ -1,0 +1,71 @@
+{
+    "name": "test-network-org${ORG}",
+    "version": "1.0.0",
+    "client": {
+        "organization": "Lifecare",  
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300"
+                }
+            }
+        }
+    },
+    "organizations": {
+        "Lifecare": {  
+            "mspid": "LifecareMSP",  
+            "peers": [
+                "LifecareEndorser",  
+                "LifecareCommitters",
+                "LifecareAnchors"
+            ],
+            "certificateAuthorities": [
+                "ca.LifecareInsurance"  
+            ]
+        }
+    },
+    "peers": {
+        "LifecareEndorser": {  
+            "url": "grpcs://localhost:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "LifecareEndorser",  
+                "hostnameOverride": "LifecareEndorser"          
+            }
+        },
+        "LifecareCommitters": {   
+            "url": "grpcs://localhost:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "LifecareCommitters",  
+                "hostnameOverride": "LifecareCommitters"          
+            }
+        },
+        "LifecareAnchors": {  
+            "url": "grpcs://localhost:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "LifecareAnchors",  
+                "hostnameOverride": "LifecareAnchors"          
+            }
+        }
+    },
+    "certificateAuthorities": {
+        "ca.LifecareInsurance": {  
+            "url": "https://localhost:${CAPORT}",
+            "caName": "ca-Lifecare",  
+            "tlsCACerts": {
+                "pem": ["${CAPEM}"]
+            },
+            "httpOptions": {
+                "verify": false
+            }
+        }
+    }
+}

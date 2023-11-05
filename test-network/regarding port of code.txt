@@ -1,0 +1,52 @@
+AceHospitals
+OakHospitals
+AkanshaInsurance
+LifecareInsurance
+DiagnosticCentre
+                      POPORT   CAPORT
+Ace         localhost:7051     7054
+Oak         localhost:9051     8054
+Akansha     localhost:6051     6054
+Lifecare    localhost:4051     4054
+Diagnostic  localhost:3051     3054
+orderer   9054
+
+Org-1 (Ace Hospitals)
+DoctorPeer
+NursePeer
+AnchDoctor
+EndorsStaff
+AdmissionsPeer
+
+Org-2 (Oak Hospitals)
+DoctorPeer
+NursePeer
+AnchDoctor
+EndorsStaff
+AdmissionsPeer
+
+Org-3 AkanshaInsurance
+AkanshaEndorser
+AkanshaCommitters
+AkanshaAnchors
+
+Org-4 LifecareInsurance
+LifecareEndorser
+LifecareCommitters
+LifecareAnchors
+
+
+Org-5 DiagnosticCentre
+DiagnosticEndorser
+DiagnosticCommitters
+DiagnosticAnchors
+
+
+changes done
+network.sh
+registerEnroll.sh
+setOrgEnv.sh
+
+
+
+

@@ -1,0 +1,71 @@
+{
+    "name": "test-network-org${ORG}",
+    "version": "1.0.0",
+    "client": {
+        "organization": "Diagnostic",  
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300"
+                }
+            }
+        }
+    },
+    "organizations": {
+        "Diagnostic": {  
+            "mspid": "DiagnosticMSP",  
+            "peers": [
+                "DiagnosticEndorser",  
+                "DiagnosticCommitters",
+                "DiagnosticAnchors"
+            ],
+            "certificateAuthorities": [
+                "ca.DiagnosticCentre"  
+            ]
+        }
+    },
+    "peers": {
+        "DiagnosticEndorser": {  
+            "url": "grpcs://localhost:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "DiagnosticEndorser",  
+                "hostnameOverride": "DiagnosticEndorser"          
+            }
+        },
+        "DiagnosticCommitters": {   
+            "url": "grpcs://localhost:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "DiagnosticCommitters",  
+                "hostnameOverride": "DiagnosticCommitters"          
+            }
+        },
+        "DiagnosticAnchors": {  
+            "url": "grpcs://localhost:${P0PORT}",
+            "tlsCACerts": {
+                "pem": "${PEERPEM}"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "DiagnosticAnchors",  
+                "hostnameOverride": "DiagnosticAnchors"          
+            }
+        }
+    },
+    "certificateAuthorities": {
+        "ca.DiagnosticCentre": {  
+            "url": "https://localhost:${CAPORT}",
+            "caName": "ca-Diagnostic",  
+            "tlsCACerts": {
+                "pem": ["${CAPEM}"]
+            },
+            "httpOptions": {
+                "verify": false
+            }
+        }
+    }
+}

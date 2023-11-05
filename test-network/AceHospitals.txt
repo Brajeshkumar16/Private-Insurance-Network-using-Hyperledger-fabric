@@ -1,0 +1,112 @@
+AceHospitals
+OakHospitals
+AkanshaInsurance
+LifecareInsurance
+DiagnosticCentre
+
+7051 are used in config folder for gossip
+bootstrap: 127.0.0.1:7051
+
+                      POPORT   CAPORT  chaincodeaddress
+Ace         localhost:7055     7054      7052(9444)
+Oak         localhost:9051     9054      9445
+Akansha     localhost:6051     6054      9446
+Lifecare    localhost:4051     4054      9447
+Diagnostic  localhost:3051     3054      9448
+orderer optional listenaddress : 8054
+orderer.example.com general listenaddress:7050
+orderer admin listenaddress: 7053(9443)
+CCAAS_SERVER_PORT=9999
+
+OrdererEndpoints:
+            - "127.0.0.1:7050"
+AnchorPeers:
+            - Host: 127.0.0.1
+              Port: 7051
+
+channel-artifacts/${CHANNEL_NAME}.block -o localhost:7053
+
+
+Org-1 AceHospitals
+DoctorPeer
+NursePeer
+AnchDoctor
+EndorsStaff
+AdmissionsPeer
+
+Org-2 OakHospitals
+OakDoctorPeer
+OakNursePeer
+OakAnchDoctor
+OakEndorsStaff
+OakAdmissionsPeer
+
+Org-3 AkanshaInsurance
+AkanshaEndorser
+AkanshaCommitters
+AkanshaAnchors
+
+Org-4 LifecareInsurance
+LifecareEndorser
+LifecareCommitters
+LifecareAnchors
+
+
+Org-5 DiagnosticCentre
+DiagnosticEndorser
+DiagnosticCommitters
+DiagnosticAnchors
+
+
+changes done
+network.sh
+registerEnroll.sh
+setOrgEnv.sh
+monitordocker.sh
+configtx.yaml
+utils.sh
+setAnchorPeer.sh
+pkgcc.sh
+envVar.sh
+deployCCAAS.sh
+deployCC.sh
+createChannel.sh
+configUpdate.sh
+ccutils.sh
+docker-compose-test-net.yaml
+ccp-generate.sh
+cpp-template.json
+cpp-template.yaml
+fabric-ca folder
+docker folder
+
+
+
+monitordocker.sh
+DOCKER_NETWORK=fabric_test
+PORT=8000
+http://127.0.0.1:${PORT}/logs
+ublish=127.0.0.1:${PORT}:80 
+
+
+
+doughts
+organization/ccp-generate.sh
+envVar.sh
+
+
+
+ca-ace name change
+organizations/acehospitals.yaml
+
+
+echo "CORE_PEER_TLS_ENABLED=true"
+echo "ORDERER_CA=${ORDERER_CA}"
+echo "PEER0_Ace_CA=${PEER0_Ace_CA}"
+echo "PEER0_Oak_CA=${PEER0_Oak_CA}"
+echo "PEER0_Akansha_CA=${PEER0_Akansha_CA}"
+echo "PEER0_Lifecare_CA=${PEER0_Lifecare_CA}"
+echo "PEER0_Diagnostic_CA=${PEER0_Diagnostic_CA}"
+
+
+

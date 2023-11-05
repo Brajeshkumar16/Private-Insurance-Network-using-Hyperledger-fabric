@@ -1,0 +1,71 @@
+---
+name: test-network-Ace
+version: 1.0.0
+client:
+  organization: Ace  # Change organization name to "AceHospitals"
+  connection:
+    timeout:
+      peer:
+        endorser: '300'
+organizations:
+  Ace:  # Change organization name to "AceHospitals"
+    mspid: AceMSP  # Change MSP ID if necessary
+    peers:
+    - DoctorPeer  # Add "DoctorPeer"
+    - NursePeer  # Add "NursePeer"
+    - AnchDoctor # Add "AnchDoctor"
+    - EndorsStaff # Add "EndorsStaff"
+    - AdmissionsPeer # Add "AdmissionsPeer"
+    certificateAuthorities:
+    - ca.AceHospitals  # Update CA name if necessary
+peers:
+  DoctorPeer:  # Add "DoctorPeer"
+    url: grpcs://localhost:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: DoctorPeer # Update hostnameOverride
+      hostnameOverride: DoctorPeer  # Update hostnameOverride
+  NursePeer:   # Add "NursePeer"
+    url: grpcs://localhost:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: NursePeer  # Update hostnameOverride
+      hostnameOverride: NursePeer  # Update hostnameOverride
+  AnchDoctor:  # Add "AnchDoctor"
+    url: grpcs://localhost:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: AnchDoctor # Update hostnameOverride
+      hostnameOverride: AnchDoctor  # Update hostnameOverride
+  EndorsStaff: # Add "EndorsStaff"
+    url: grpcs://localhost:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: EndorsStaff  # Update hostnameOverride
+      hostnameOverride: EndorsStaff  # Update hostnameOverride
+  AdmissionsPeer: # Add "AdmissionsPeer"
+    url: grpcs://localhost:${P0PORT}
+    tlsCACerts:
+      pem: |
+          ${PEERPEM}
+    grpcOptions:
+      ssl-target-name-override: AdmissionsPeer  # Update hostnameOverride
+      hostnameOverride: AdmissionsPeer  # Update hostnameOverride
+certificateAuthorities:
+  ca.AceHospitals:  # Update CA name to "ca.AceHospitals.example.com"
+    url: https://localhost:${CAPORT}
+    caName: ca-Ace  # Update CA name if necessary
+    tlsCACerts:
+      pem: 
+        - |
+          ${CAPEM}
+    httpOptions:
+      verify: false

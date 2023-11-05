@@ -1,0 +1,34 @@
+global:
+  scrape_interval: 1s
+  external_labels:
+    monitor: 'devopsage-monitor'
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+  - job_name: "orderer"
+    static_configs:
+      - targets: ["orderer.example.com:9443"]
+  - job_name: "DoctorPeer"
+    static_configs:
+      - targets: ["DoctorPeer:9444"]
+  - job_name: "OakDoctorPeer"
+    static_configs:
+      - targets: ["OakDoctorPeer:9445"]
+  - job_name: "AkanshaEndorser"
+    static_configs:
+      - targets: ["AkanshaEndorser:9446"]
+  - job_name: "LifecareEndorser"
+    static_configs:
+      - targets: ["LifecareEndorser:9447"]
+  - job_name: "DiagnosticEndorser"
+    static_configs:
+      - targets: ["DiagnosticEndorser:9448"]
+  - job_name: cadvisor
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['cadvisor:8080']
+  - job_name: node
+    static_configs:
+      - targets: ['node-exporter:9100']

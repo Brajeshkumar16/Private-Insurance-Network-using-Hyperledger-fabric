@@ -1,0 +1,878 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '3.7'
+
+volumes:
+  orderer.example.com:
+  DoctorPeer:
+  NursePeer:
+  AnchDoctor:
+  EndorsStaff:
+  AdmissionsPeer:
+  OakDoctorPeer:
+  OakNursePeer:
+  OakAnchDoctor:
+  OakEndorsStaff:
+  OakAdmissionsPeer:
+  AkanshaEndorser:
+  AkanshaCommitters:
+  AkanshaAnchors:
+  LifecareEndorser:
+  LifecareCommitters:
+  LifecareAnchors:
+  DiagnosticEndorser:
+  DiagnosticCommitters:
+  DiagnosticAnchors:
+
+networks:
+  test:
+    name: fabric_test
+
+services:
+
+  orderer.example.com:
+    container_name: orderer.example.com
+    image: hyperledger/fabric-orderer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_LOGGING_SPEC=INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LISTENPORT=7050
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      # enabled TLS
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+      - ORDERER_CHANNELPARTICIPATION_ENABLED=true
+      - ORDERER_ADMIN_TLS_ENABLED=true
+      - ORDERER_ADMIN_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_ADMIN_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_ADMIN_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_ADMIN_TLS_CLIENTROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_ADMIN_LISTENADDRESS=0.0.0.0:7053
+      - ORDERER_OPERATIONS_LISTENADDRESS=orderer.example.com:9443
+      - ORDERER_METRICS_PROVIDER=prometheus
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: orderer
+    volumes:
+        - ../organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/var/hyperledger/orderer/msp
+        - ../organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/var/hyperledger/orderer/tls
+        - orderer.example.com:/var/hyperledger/production/orderer
+    ports:
+      - 7050:7050
+      - 7053:7053
+      - 9443:9443
+    networks:
+      - test
+
+  DoctorPeer:
+    container_name: DoctorPeer
+    image: hyperledger/fabric-peer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variables
+      - CORE_PEER_ID=DoctorPeer
+      - CORE_PEER_ADDRESS=DoctorPeer:7055
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7055
+      - CORE_PEER_CHAINCODEADDRESS=DoctorPeer:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=DoctorPeer:7055
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=DoctorPeer:7055
+      - CORE_PEER_LOCALMSPID=AceMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_OPERATIONS_LISTENADDRESS=DoctorPeer:9444
+      - CORE_METRICS_PROVIDER=prometheus
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"DoctorPeer"}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+    volumes:
+        - ../organizations/peerOrganizations/AceHospitals/peers/DoctorPeer/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/AceHospitals/peers/DoctorPeer/tls:/etc/hyperledger/fabric/tls
+        - DoctorPeer:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 7055:7055
+      - 9444:9444
+    networks:
+      - test
+
+  NursePeer:
+    container_name: NursePeer
+    image: hyperledger/fabric-peer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variables
+      - CORE_PEER_ID=NursePeer
+      - CORE_PEER_ADDRESS=NursePeer:7056
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7056
+      - CORE_PEER_CHAINCODEADDRESS=NursePeer:7057
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7057
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=NursePeer:7056
+      - CORE_PEER_GOSSIP_BOOTSTRAP=NursePeer:7056
+      - CORE_PEER_LOCALMSPID=AceMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp      
+      - CORE_OPERATIONS_LISTENADDRESS=NursePeer:19444
+      - CORE_METRICS_PROVIDER=prometheus
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"NursePeer"}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+    volumes:
+        - ../organizations/peerOrganizations/AceHospitals/peers/NursePeer/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/AceHospitals/peers/NursePeer/tls:/etc/hyperledger/fabric/tls
+        - NursePeer:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 7056:7056
+      - 19444:19444
+    networks:
+      - test
+
+  AnchDoctor:
+    container_name: AnchDoctor
+    image: hyperledger/fabric-peer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variables
+      - CORE_PEER_ID=AnchDoctor
+      - CORE_PEER_ADDRESS=AnchDoctor:7059
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7059
+      - CORE_PEER_CHAINCODEADDRESS=AnchDoctor:7061
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7061
+      - CORE_PEER_GOSSIP_BOOTSTRAP=AnchDoctor:7059
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=AnchDoctor:7059
+      - CORE_PEER_LOCALMSPID=AceMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_OPERATIONS_LISTENADDRESS=AnchDoctor:18444
+      - CORE_METRICS_PROVIDER=prometheus
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"AnchDoctor"}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+    volumes:
+        - ../organizations/peerOrganizations/AceHospitals/peers/AnchDoctor/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/AceHospitals/peers/AnchDoctor/tls:/etc/hyperledger/fabric/tls
+        - AnchDoctor:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 7059:7059
+      - 18444:18444
+    networks:
+      - test
+
+  EndorsStaff:
+    container_name: EndorsStaff
+    image: hyperledger/fabric-peer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variables
+      - CORE_PEER_ID=EndorsStaff
+      - CORE_PEER_ADDRESS=EndorsStaff:7041
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7041
+      - CORE_PEER_CHAINCODEADDRESS=EndorsStaff:7142
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7142
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=EndorsStaff:7041
+      - CORE_PEER_GOSSIP_BOOTSTRAP=EndorsStaff:7041
+      - CORE_PEER_LOCALMSPID=AceMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp      
+      - CORE_OPERATIONS_LISTENADDRESS=EndorsStaff:18443
+      - CORE_METRICS_PROVIDER=prometheus
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"EndorsStaff"}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+    volumes:
+        - ../organizations/peerOrganizations/AceHospitals/peers/EndorsStaff/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/AceHospitals/peers/EndorsStaff/tls:/etc/hyperledger/fabric/tls
+        - EndorsStaff:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 7041:7041
+      - 18443:18443
+    networks:
+      - test
+
+  AdmissionsPeer:
+    container_name: AdmissionsPeer
+    image: hyperledger/fabric-peer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variables
+      - CORE_PEER_ID=AdmissionsPeer
+      - CORE_PEER_ADDRESS=AdmissionsPeer:7042
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7042
+      - CORE_PEER_CHAINCODEADDRESS=AdmissionsPeer:7143
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7143
+      - CORE_PEER_GOSSIP_BOOTSTRAP=AdmissionsPeer:7042
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=AdmissionsPeer:7042
+      - CORE_PEER_LOCALMSPID=AceMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_OPERATIONS_LISTENADDRESS=AdmissionsPeer:18442
+      - CORE_METRICS_PROVIDER=prometheus
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"AdmissionsPeer"}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+    volumes:
+        - ../organizations/peerOrganizations/AceHospitals/peers/AdmissionsPeer/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/AceHospitals/peers/AdmissionsPeer/tls:/etc/hyperledger/fabric/tls
+        - AdmissionsPeer:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 7042:7042
+      - 18442:18442
+    networks:
+      - test
+
+
+  OakDoctorPeer:
+    container_name: OakDoctorPeer
+    image: hyperledger/fabric-peer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variables
+      - CORE_PEER_ID=OakDoctorPeer
+      - CORE_PEER_ADDRESS=OakDoctorPeer:9051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
+      - CORE_PEER_CHAINCODEADDRESS=OakDoctorPeer:9052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=OakDoctorPeer:9051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=OakDoctorPeer:9051
+      - CORE_PEER_LOCALMSPID=AceMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_OPERATIONS_LISTENADDRESS=OakDoctorPeer:9445
+      - CORE_METRICS_PROVIDER=prometheus
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"OakDoctorPeer"}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+    volumes:
+        - ../organizations/peerOrganizations/OakHospitals/peers/OakDoctorPeer/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/OakHospitals/peers/OakDoctorPeer/tls:/etc/hyperledger/fabric/tls
+        - OakDoctorPeer:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 9051:9051
+      - 9445:9445
+    networks:
+      - test
+
+  OakNursePeer:
+    container_name: OakNursePeer
+    image: hyperledger/fabric-peer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variables
+      - CORE_PEER_ID=OakNursePeer
+      - CORE_PEER_ADDRESS=OakNursePeer:9151
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9151
+      - CORE_PEER_CHAINCODEADDRESS=OakNursePeer:9152
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9152
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=OakNursePeer:9151
+      - CORE_PEER_GOSSIP_BOOTSTRAP=OakNursePeer:9151
+      - CORE_PEER_LOCALMSPID=AceMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp      
+      - CORE_OPERATIONS_LISTENADDRESS=OakNursePeer:19445
+      - CORE_METRICS_PROVIDER=prometheus
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"OakNursePeer"}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+    volumes:
+        - ../organizations/peerOrganizations/OakHospitals/peers/OakNursePeer/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/OakHospitals/peers/OakNursePeer/tls:/etc/hyperledger/fabric/tls
+        - OakNursePeer:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 9151:9151
+      - 19445:19445
+    networks:
+      - test
+
+  OakAnchDoctor:
+    container_name: OakAnchDoctor
+    image: hyperledger/fabric-peer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variables
+      - CORE_PEER_ID=OakAnchDoctor
+      - CORE_PEER_ADDRESS=OakAnchDoctor:9153
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9153
+      - CORE_PEER_CHAINCODEADDRESS=OakAnchDoctor:9252
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9252
+      - CORE_PEER_GOSSIP_BOOTSTRAP=OakAnchDoctor:9153
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=OakAnchDoctor:9153
+      - CORE_PEER_LOCALMSPID=AceMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_OPERATIONS_LISTENADDRESS=OakAnchDoctor:18345
+      - CORE_METRICS_PROVIDER=prometheus
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"OakAnchDoctor"}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+    volumes:
+        - ../organizations/peerOrganizations/OakHospitals/peers/OakAnchDoctor/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/OakHospitals/peers/OakAnchDoctor/tls:/etc/hyperledger/fabric/tls
+        - OakAnchDoctor:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 9153:9153
+      - 18345:18345
+    networks:
+      - test
+
+  OakEndorsStaff:
+    container_name: OakEndorsStaff
+    image: hyperledger/fabric-peer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variables
+      - CORE_PEER_ID=OakEndorsStaff
+      - CORE_PEER_ADDRESS=OakEndorsStaff:9154
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9154
+      - CORE_PEER_CHAINCODEADDRESS=OakEndorsStaff:9253
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9253
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=OakEndorsStaff:9154
+      - CORE_PEER_GOSSIP_BOOTSTRAP=OakEndorsStaff:9154
+      - CORE_PEER_LOCALMSPID=AceMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp      
+      - CORE_OPERATIONS_LISTENADDRESS=OakEndorsStaff:18346
+      - CORE_METRICS_PROVIDER=prometheus
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"OakEndorsStaff"}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+    volumes:
+        - ../organizations/peerOrganizations/OakHospitals/peers/OakEndorsStaff/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/OakHospitals/peers/OakEndorsStaff/tls:/etc/hyperledger/fabric/tls
+        - OakEndorsStaff:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 9154:9154
+      - 18346:18346
+    networks:
+      - test
+
+  OakAdmissionsPeer:
+    container_name: OakAdmissionsPeer
+    image: hyperledger/fabric-peer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variables
+      - CORE_PEER_ID=OakAdmissionsPeer
+      - CORE_PEER_ADDRESS=OakAdmissionsPeer:9155
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9155
+      - CORE_PEER_CHAINCODEADDRESS=OakAdmissionsPeer:9254
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9254
+      - CORE_PEER_GOSSIP_BOOTSTRAP=OakAdmissionsPeer:9155
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=OakAdmissionsPeer:9155
+      - CORE_PEER_LOCALMSPID=AceMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_OPERATIONS_LISTENADDRESS=OakAdmissionsPeer:18347
+      - CORE_METRICS_PROVIDER=prometheus
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"OakAdmissionsPeer"}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+    volumes:
+        - ../organizations/peerOrganizations/OakHospitals/peers/OakAdmissionsPeer/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/OakHospitals/peers/OakAdmissionsPeer/tls:/etc/hyperledger/fabric/tls
+        - OakAdmissionsPeer:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 9155:9155
+      - 18347:18347
+    networks:
+      - test
+
+  AkanshaEndorser:
+    container_name: AkanshaEndorser
+    image: hyperledger/fabric-peer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variables
+      - CORE_PEER_ID=AkanshaEndorser
+      - CORE_PEER_ADDRESS=AkanshaEndorser:6051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:6051
+      - CORE_PEER_CHAINCODEADDRESS=AkanshaEndorser:6052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=AkanshaEndorser:6051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=AkanshaEndorser:6051
+      - CORE_PEER_LOCALMSPID=AkanshaMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp      
+      - CORE_OPERATIONS_LISTENADDRESS=AkanshaEndorser:9446
+      - CORE_METRICS_PROVIDER=prometheus
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"AkanshaEndorser"}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+    volumes:
+        - ../organizations/peerOrganizations/AkanshaInsurance/peers/AkanshaEndorser/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/AkanshaInsurance/peers/AkanshaEndorser/tls:/etc/hyperledger/fabric/tls
+        - AkanshaEndorser:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 6051:6051
+      - 9446:9446
+    networks:
+      - test
+
+  AkanshaCommitters:
+    container_name: AkanshaCommitters
+    image: hyperledger/fabric-peer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variables
+      - CORE_PEER_ID=AkanshaCommitters
+      - CORE_PEER_ADDRESS=AkanshaCommitters:6151
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:6151
+      - CORE_PEER_CHAINCODEADDRESS=AkanshaCommitters:6152
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6152
+      - CORE_PEER_GOSSIP_BOOTSTRAP=AkanshaCommitters:6151
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=AkanshaCommitters:6151
+      - CORE_PEER_LOCALMSPID=AkanshaMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_OPERATIONS_LISTENADDRESS=AkanshaCommitters:9446
+      - CORE_METRICS_PROVIDER=prometheus
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"AkanshaCommitters"}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+    volumes:
+        - ../organizations/peerOrganizations/AkanshaInsurance/peers/AkanshaCommitters/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/AkanshaInsurance/peers/AkanshaCommitters/tls:/etc/hyperledger/fabric/tls
+        - AkanshaCommitters:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 6151:6151
+      - 19446:19446
+    networks:
+      - test
+
+  AkanshaAnchors:
+    container_name: AkanshaAnchors
+    image: hyperledger/fabric-peer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variables
+      - CORE_PEER_ID=AkanshaAnchors
+      - CORE_PEER_ADDRESS=AkanshaAnchors:6153
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:6153
+      - CORE_PEER_CHAINCODEADDRESS=AkanshaAnchors:6154
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6154
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=AkanshaAnchors:6153
+      - CORE_PEER_GOSSIP_BOOTSTRAP=AkanshaAnchors:6153
+      - CORE_PEER_LOCALMSPID=AkanshaMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp      
+      - CORE_OPERATIONS_LISTENADDRESS=AkanshaAnchors:19416
+      - CORE_METRICS_PROVIDER=prometheus
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"AkanshaAnchors"}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+    volumes:
+        - ../organizations/peerOrganizations/AkanshaInsurance/peers/AkanshaAnchors/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/AkanshaInsurance/peers/AkanshaAnchors/tls:/etc/hyperledger/fabric/tls
+        - AkanshaAnchors:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 6153:6153
+      - 19416:19416
+    networks:
+      - test
+
+  LifecareEndorser:
+    container_name: LifecareEndorser
+    image: hyperledger/fabric-peer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variables
+      - CORE_PEER_ID=LifecareEndorser
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:4051
+      - CORE_PEER_CHAINCODEADDRESS=LifecareEndorser:4052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:4052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=LifecareEndorser:4051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=LifecareEndorser:4051
+      - CORE_PEER_LOCALMSPID=LifecareMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_OPERATIONS_LISTENADDRESS=LifecareEndorser:9447
+      - CORE_METRICS_PROVIDER=prometheus
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"LifecareEndorser"}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+    volumes:
+        - ../organizations/peerOrganizations/LifecareInsurance/peers/LifecareEndorser/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/LifecareInsurance/peers/LifecareEndorser/tls:/etc/hyperledger/fabric/tls
+        - LifecareEndorser:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 4051:4051
+      - 9447:9447
+    networks:
+      - test
+
+  LifecareCommitters:
+    container_name: LifecareCommitters
+    image: hyperledger/fabric-peer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variables
+      - CORE_PEER_ID=LifecareCommitters
+      - CORE_PEER_ADDRESS=LifecareCommitters:4151
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:4151
+      - CORE_PEER_CHAINCODEADDRESS=LifecareCommitters:4152
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:4152
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=LifecareCommitters:4151
+      - CORE_PEER_GOSSIP_BOOTSTRAP=LifecareCommitters:4151
+      - CORE_PEER_LOCALMSPID=LifecareMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp      
+      - CORE_OPERATIONS_LISTENADDRESS=LifecareCommitters:19447
+      - CORE_METRICS_PROVIDER=prometheus
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"LifecareCommitters"}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+    volumes:
+        - ../organizations/peerOrganizations/LifecareInsurance/peers/LifecareCommitters/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/LifecareInsurance/peers/LifecareCommitters/tls:/etc/hyperledger/fabric/tls
+        - LifecareCommitters:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 4151:4151
+      - 19447:19447
+    networks:
+      - test
+  
+  LifecareAnchors:
+    container_name: LifecareAnchors
+    image: hyperledger/fabric-peer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variables
+      - CORE_PEER_ID=LifecareAnchors
+      - CORE_PEER_ADDRESS=LifecareAnchors:4153
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:4153
+      - CORE_PEER_CHAINCODEADDRESS=LifecareAnchors:4154
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:4154
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=LifecareAnchors:4153
+      - CORE_PEER_GOSSIP_BOOTSTRAP=LifecareAnchors:4153
+      - CORE_PEER_LOCALMSPID=LifecareMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp      
+      - CORE_OPERATIONS_LISTENADDRESS=LifecareAnchors:19437
+      - CORE_METRICS_PROVIDER=prometheus
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"LifecareAnchors"}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+    volumes:
+        - ../organizations/peerOrganizations/LifecareInsurance/peers/LifecareAnchors/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/LifecareInsurance/peers/LifecareAnchors/tls:/etc/hyperledger/fabric/tls
+        - LifecareAnchors:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 4153:4153
+      - 19437:19437
+    networks:
+      - test
+  
+
+  DiagnosticEndorser:
+    container_name: DiagnosticEndorser
+    image: hyperledger/fabric-peer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variables
+      - CORE_PEER_ID=DiagnosticEndorser
+      - CORE_PEER_ADDRESS=DiagnosticEndorser:3051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:3051
+      - CORE_PEER_CHAINCODEADDRESS=DiagnosticEndorser:3052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:3052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=DiagnosticEndorser:3051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=DiagnosticEndorser:3051
+      - CORE_PEER_LOCALMSPID=DiagnosticMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_OPERATIONS_LISTENADDRESS=DiagnosticEndorser:9448
+      - CORE_METRICS_PROVIDER=prometheus
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"DiagnosticEndorser"}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+    volumes:
+        - ../organizations/peerOrganizations/DiagnosticCentre/peers/DiagnosticEndorser/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/DiagnosticCentre/peers/DiagnosticEndorser/tls:/etc/hyperledger/fabric/tls
+        - DiagnosticEndorser:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 3051:3051
+      - 9448:9448
+    networks:
+      - test
+
+  DiagnosticCommitters:
+    container_name: DiagnosticCommitters
+    image: hyperledger/fabric-peer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variables
+      - CORE_PEER_ID=DiagnosticCommitters
+      - CORE_PEER_ADDRESS=DiagnosticCommitters:3151
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:3151
+      - CORE_PEER_CHAINCODEADDRESS=DiagnosticCommitters:3152
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:3152
+      - CORE_PEER_GOSSIP_BOOTSTRAP=DiagnosticCommitters:3151
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=DiagnosticCommitters:3151
+      - CORE_PEER_LOCALMSPID=DiagnosticMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_OPERATIONS_LISTENADDRESS=DiagnosticCommitters:19448
+      - CORE_METRICS_PROVIDER=prometheus
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"DiagnosticCommitters"}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+    volumes:
+        - ../organizations/peerOrganizations/DiagnosticCentre/peers/DiagnosticCommitters/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/DiagnosticCentre/peers/DiagnosticCommitters/tls:/etc/hyperledger/fabric/tls
+        - DiagnosticCommitters:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 3151:3151
+      - 19448:19448
+    networks:
+      - test
+
+  DiagnosticAnchors:
+    container_name: DiagnosticAnchors
+    image: hyperledger/fabric-peer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      # Peer specific variables
+      - CORE_PEER_ID=DiagnosticAnchors
+      - CORE_PEER_ADDRESS=DiagnosticAnchors:3153
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:3153
+      - CORE_PEER_CHAINCODEADDRESS=DiagnosticAnchors:3154
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:3154
+      - CORE_PEER_GOSSIP_BOOTSTRAP=DiagnosticAnchors:3153
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=DiagnosticAnchors:3153
+      - CORE_PEER_LOCALMSPID=DiagnosticMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
+      - CORE_OPERATIONS_LISTENADDRESS=DiagnosticAnchors:19438
+      - CORE_METRICS_PROVIDER=prometheus
+      - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"DiagnosticAnchors"}
+      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+    volumes:
+        - ../organizations/peerOrganizations/DiagnosticCentre/peers/DiagnosticAnchors/msp:/etc/hyperledger/fabric/msp
+        - ../organizations/peerOrganizations/DiagnosticCentre/peers/DiagnosticAnchors/tls:/etc/hyperledger/fabric/tls
+        - DiagnosticAnchors:/var/hyperledger/production
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: peer node start
+    ports:
+      - 3153:3153
+      - 19438:19438
+    networks:
+      - test
+
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools:latest
+    labels:
+      service: hyperledger-fabric
+    tty: true
+    stdin_open: true
+    environment:
+      - GOPATH=/opt/gopath
+      - FABRIC_LOGGING_SPEC=INFO
+      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
+      #- FABRIC_LOGGING_SPEC=DEBUG
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+        - ../organizations:/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations
+        - ../scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
+    depends_on:
+      - DoctorPeer
+      - NursePeer
+      - AnchDoctor
+      - EndorsStaff
+      - AdmissionsPeer
+      - OakDoctorPeer
+      - OakNursePeer
+      - OakAnchDoctor
+      - OakEndorsStaff
+      - OakAdmissionsPeer
+      - AkanshaEndorser
+      - AkanshaCommitters
+      - AkanshaAnchors
+      - LifecareEndorser
+      - LifecareCommitters
+      - LifecareAnchors
+      - DiagnosticEndorser
+      - DiagnosticCommitters
+      - DiagnosticAnchors
+    networks:
+      - test

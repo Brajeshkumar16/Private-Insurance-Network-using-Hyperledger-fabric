@@ -1,0 +1,68 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '3.7'
+
+services:
+  DoctorPeer:
+    volumes:
+      - ./podman/peercfg:/etc/hyperledger/peercfg
+
+  NursePeer:
+    volumes:
+      - ./podman/peercfg:/etc/hyperledger/peercfg
+
+  AnchDoctor:
+    volumes:
+      - ./podman/peercfg:/etc/hyperledger/peercfg
+
+  EndorsStaff:
+    volumes:
+      - ./podman/peercfg:/etc/hyperledger/peercfg
+
+  AdmissionsPeer:
+    volumes:
+      - ./podman/peercfg:/etc/hyperledger/peercfg
+
+  AkanshaEndorser:
+    volumes:
+      - ./podman/peercfg:/etc/hyperledger/peercfg
+
+  AkanshaCommitters:
+    volumes:
+      - ./podman/peercfg:/etc/hyperledger/peercfg
+
+  AkanshaAnchors:
+    volumes:
+      - ./podman/peercfg:/etc/hyperledger/peercfg
+
+  LifecareEndorser:
+    volumes:
+      - ./podman/peercfg:/etc/hyperledger/peercfg
+
+  LifecareCommitters:
+    volumes:
+      - ./podman/peercfg:/etc/hyperledger/peercfg
+
+  LifecareAnchors:
+    volumes:
+      - ./podman/peercfg:/etc/hyperledger/peercfg
+
+  DiagnosticEndorser:
+    volumes:
+      - ./podman/peercfg:/etc/hyperledger/peercfg
+
+  DiagnosticCommitters:
+    volumes:
+      - ./podman/peercfg:/etc/hyperledger/peercfg
+
+  DiagnosticAnchors:
+    volumes:
+      - ./podman/peercfg:/etc/hyperledger/peercfg
+
+
+  cli:
+    volumes:
+      - ./podman/peercfg:/etc/hyperledger/peercfg
